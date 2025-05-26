@@ -5,13 +5,15 @@ import { Input } from '@/components/ui/input';
 import Layout from '@/pages/Layout';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { GoogleGenAI } from "@google/genai"; // <-- NEW IMPORT
+
 type Message = {
   text: string;
   type: 'user' | 'assistant';
 };
 
-const API_KEY = import.meta.env.VITE_API_KEY;
-const API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
+const API_KEY = import.meta.env.VITE_GEMINI_API; // <-- UPDATED
+const ai = new GoogleGenAI({ apiKey: API_KEY }); // <-- NEW INSTANCE
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -21,6 +23,7 @@ const indianStates = [
   "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
 ];
 
+// UPDATED FUNCTION
 const generateChatResponse = async (prompt: string, stateContext: string = "") => {
   try {
     const fullPrompt = `
@@ -38,22 +41,14 @@ const generateChatResponse = async (prompt: string, stateContext: string = "") =
       3. Mention 1–2 key facts or examples related to climate change.
     `;
 
-    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: fullPrompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 800,
-        }
-      }),
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
     });
 
-    const data = await response.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, no response.";
+    // The response object may differ; log it if you get "Sorry, no response."
+    // @ts-ignore
+    return response.text || "Sorry, no response.";
   } catch (error) {
     console.error("Error:", error);
     return "I'm sorry, I had trouble processing your question. Please try again later.";
@@ -158,36 +153,35 @@ const Chatbot = () => {
           </div>
 
           <ScrollArea className="h-[400px] border rounded-lg mb-4 pr-2">
-  <div ref={chatContainerRef} className="flex flex-col gap-2 p-2">
-    {messages.map((msg, index) => (
-      <div
-        key={index}
-        className={`p-3 rounded-lg max-w-[80%] whitespace-pre-wrap ${
-          msg.type === "user" ? "bg-primary/10 ml-auto" : "bg-muted"
-        }`}
-      >
-        {msg.text}
-      </div>
-    ))}
+            <div ref={chatContainerRef} className="flex flex-col gap-2 p-2">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`p-3 rounded-lg max-w-[80%] whitespace-pre-wrap ${
+                    msg.type === "user" ? "bg-primary/10 ml-auto" : "bg-muted"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
 
-    {isLoading && (
-      <div className="bg-muted p-3 rounded-lg max-w-[80%]">
-        <div className="flex gap-1">
-          <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"></div>
-          <div
-            className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
-            style={{ animationDelay: "0.1s" }}
-          ></div>
-          <div
-            className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
-            style={{ animationDelay: "0.2s" }}
-          ></div>
-        </div>
-      </div>
-    )}
-  </div>
-</ScrollArea>
-
+              {isLoading && (
+                <div className="bg-muted p-3 rounded-lg max-w-[80%]">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"></div>
+                    <div
+                      className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.1s" }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"
+                      style={{ animationDelay: "0.2s" }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
 
           <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
