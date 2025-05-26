@@ -10,7 +10,7 @@ type Message = {
   type: 'user' | 'assistant';
 };
 
-const API_KEY = "AIzaSyBBZtYJL1ag1gjh63hngdAper0XAEII0ak";
+const API_KEY = import.meta.env.VITE_API_KEY;
 const API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
 
 const indianStates = [
