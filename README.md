@@ -33,8 +33,8 @@
 1. **Download or Clone the Project**  
    Download the ZIP file or clone the repo:  
    ```bash
-   git clone https://github.com/your-username/climate-insights.git
-   cd climate-insights
+   git clone https://github.com/lokesh2910v/Climate-Insights-App.git
+
 ## Create env file and add environment variables 
 1. VITE_SUPABASE_URL=your-supabase-url
 2. VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
