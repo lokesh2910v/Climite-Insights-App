@@ -36,9 +36,9 @@
    git clone https://github.com/your-username/climate-insights.git
    cd climate-insights
 ## Create env file and add environment variables 
-1.VITE_SUPABASE_URL=your-supabase-url
-2.VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-3.VITE_GEMINI_API_KEY=your-gemini-api-key
+1. VITE_SUPABASE_URL=your-supabase-url
+2. VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+3. VITE_GEMINI_API_KEY=your-gemini-api-key
 
 1. npm i - downalod node modubles
 2. run command - npm run dev
